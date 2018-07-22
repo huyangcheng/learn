@@ -2,7 +2,7 @@
 
 ###安装
 
-**Linux 中 yum install git **
+**Linux 中 yum install git**
 
 ### 配置相关
 
