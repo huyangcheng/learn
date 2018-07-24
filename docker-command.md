@@ -1,30 +1,3 @@
-### 运行第一个 `docker` 容器
-
--i 保证容器中 STDIN 是开启的，-t 是告诉 docker 为创建的容器分配一个伪 tty 终端
-```
-docker run -i -t ubuntu bash
-```
-### 自动启动容器
-
-由于某些错误而导致容器停止运行，可以通过 `--restart` 标识，让 Docker 自动重新启动容器。 `--restart` 检测容器的退出代码，并据此决定是否重启容器。
-
-```
-docker run --restart=always --name daemon_dave -d ubuntu /bin/sh -c "while true; do echo hello word; sleep 1; done"
-```
-
-`--restart` 标志被设置为 **always**。无论容器的退出代码是什么，Docer 都会自动重启该容器。除了 **always**，还可以设为 **on-on-failure**，这样只有当容器退出代码为非 0 值时，才会自动重启，另外还可以设置重启次数参数 `--restart=on-failure:5`
-
-### 获取容器信息
-
-```
-# 获取所有信息
-docker inspect daemon_dave
-# 获取指定信息
-docker inspect --format='{{.State.Running}}' daemon_dave
-# 获取多个容器信息
-docker inspect daemon_dave webserver
-```
-
 ### 常用命令
 + docker --version ：查看版本信息
 + docker info ：查看 docker 信息
@@ -33,6 +6,7 @@ docker inspect daemon_dave webserver
     * -t ：为创建的容器分配一个伪 tty 终端
     * --name ：为容器自定义名称
     * -d ：将容器放到后台运行
+    * -p ：设置端口映射，如 **80:80**，**127.0.0.1:8080:80**
 + docker ps ：显示正在运行的容器
     * -a ：列出所有容器，包括运行和停止的
     * -l ：列出最后一个运行的容器
@@ -57,3 +31,21 @@ docker inspect daemon_dave webserver
     * -t ：为创建的容器分配一个伪 tty 终端
 + docker inspect [name|id]... ：获取容器信息
     * -f，-format ：输出指定模板，如：`{{.State.Running}}`
++ docker images [name]：列出所有或指定名称的镜像
++ docker pull name[:tag] ：从镜像仓库中拉取镜像
++ docker search name ：从镜像仓库中查看镜像
++ docker commit [name|id] mirror_name[:tag] ：将指定容器创建为一个新的镜像，还可以设置镜像标签
+    * -m ：设置提交信息
+    * -a ：设置作者
++ docker build [OPTIONS] PATH | URL | - ：从指定路径或者地址上根据 `Dockerfile` 构建一个新的镜像
+    * -t ：设置名称或者标签
+    * --no-cache ：不使用缓存进行构建
++ docker history IMAGE ：显示镜像的构建历史
++ docker port IMAGE port ：查看镜像端口影射情况
+
+
+### 查看 Docker 端口影射情况
+
+```
+docker port 8cb23f33fa30 80
+```
