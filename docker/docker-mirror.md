@@ -1,3 +1,5 @@
+> 内容源自阅读 [`第一本 Docker 书`](https://item.jd.com/11909234.html)
+
 ### 什么是 Docker 镜像
 
 Docker 镜像是`由文件系统叠加而成`。最底端是一个引导文件系统，即 bootfs。
