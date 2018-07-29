@@ -1,4 +1,4 @@
-### 常用命令
+### 命令列表
 + docker --version ：查看版本信息
 + docker info ：查看 docker 信息
 + docker run IMAGE : 运行一个容器
@@ -7,6 +7,8 @@
     * --name ：为容器自定义名称
     * -d ：将容器放到后台运行
     * -p ：设置端口映射，如 **80:80**，**127.0.0.1:8080:80**
+    * -v ：绑定挂载卷 **/data/web:/data/web** ，在容器目录下使用 `:rw`、`:ro` 可以控制目录的读写权限
+    * --net ：指定运行网络
 + docker ps ：显示正在运行的容器
     * -a ：列出所有容器，包括运行和停止的
     * -l ：列出最后一个运行的容器
@@ -42,10 +44,41 @@
     * --no-cache ：不使用缓存进行构建
 + docker history IMAGE ：显示镜像的构建历史
 + docker port IMAGE port ：查看镜像端口影射情况
++ docker network ：管理网络
+    * create ： 创建一个网络
+    * inspect ： 显示网络详情
+    * ls ：列出所有网络
+    * rm ：删除指定网络
 
+### 常用命令
 
-### 查看 Docker 端口影射情况
+**查看 Docker 端口影射情况**
 
 ```
 docker port 8cb23f33fa30 80
 ```
+
+**查看容器的IP**
+
+```
+docker inspect -f '{{.NetworkSettings.IPAddress}}' IMAGE
+```
+
+**进入正在运行中的容器**
+
+```
+docker exec -it IMAGE /bin/bash
+```
+
+**创建 Docker 网络**
+
+```
+# 创建一个名为 app 的桥接网络
+docker network app
+```
+
+**查看 app 网络详情**
+```
+docker network inspect app
+```
+

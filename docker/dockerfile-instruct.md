@@ -223,3 +223,18 @@ docker build --build-arg build=1234 -t "xhz/test" .
 + ftp_proxy
 + NO_PROXY
 + no_proxy
+
+### ONBUILD
+
+ONBUILD 指令用于为镜像添加触发器，当一个镜像被用作其他镜像的基础镜像时，镜像中的触发器将会被执行。
+
+触发器会在构建过程中插入新指令，这些指令是经跟在 `FROM` 之后，触发器可以是除了 `FROM`、`MAINTAINER` 和 `ONBUILD` 之外的任何构建指令。
+
+触发器只能被继承一次，也就是只能在子镜像中执行，而不会在孙子镜像中执行。
+
+**示例**
+
+```
+ONBUILD ADD . /app/src
+ONBUILD RUN cd /app/src && make
+```

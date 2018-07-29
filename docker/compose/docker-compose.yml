@@ -1,0 +1,11 @@
+web: 
+  image: xhz/nginx
+  command: nginx
+  ports:
+    - "80:80"
+  volumes:
+    - f:/learn/docker/sample/website:/var/www/html/website
+  links:
+    - redis
+redis:
+  image: xhz/redis
