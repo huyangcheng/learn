@@ -1,3 +1,5 @@
+> 内容源自阅读 [`Go语言学习笔记`](https://item.jd.com/11944267.html)
+
 ### 源文件
 
 每个源文件都属于包的一部分，在文件头部用 `package` 声明所属的包名称。以 “.go” 作为文件扩展名，语句结尾分号会被省略，入口函数 main 没有参数，且必须放在 `main` 包下。
@@ -171,4 +173,228 @@ func test3(a, b int) {
 	println(a / b)
 }
 
+```
+
+### 数据
+
+**切片**
+
+```
+package main
+
+func main() {
+	// 创建容量为 5 的切片
+	x := make([]int, 0, 5)
+
+	// 追加数据。超过容量自动扩容
+	for i := 1; i < 8; i++ {
+		x = append(x, i)
+	}
+
+}
+```
+
+**字典**
+
+```
+package main
+
+import "fmt"
+
+func main() {
+	// 定义字典类型对象
+	m := make(map[string]int)
+
+	// 添加设置字典
+	m["a"] = 1
+	m["a"] = 2
+
+	// 获取值，使用 ok 字典中是否有此 key，因为很多情况会返回默认值
+	x, ok := m["b"]
+
+	fmt.Println(x, ok)
+
+	x2, ok2 := m["a"]
+	fmt.Println(x2, ok2)
+
+	// 删除 key
+	delete(m, "a")
+	delete(m, "b")
+
+}
+```
+
+**结构体**
+
+```
+package main
+
+import (
+	"fmt"
+)
+
+type user struct {
+	name string
+	age  byte
+}
+
+type manager struct {
+	// 嵌入其他类型
+	user
+	title string
+}
+
+func main() {
+
+	var m manager
+
+	// 直接访问嵌入的类型成员
+	m.name = "xhz"
+	m.age = 29
+	m.title = "coding"
+
+	fmt.Println(m)
+}
+```
+
+### 方法
+
+可以为当前包内的任意类型定义方法。
+
+```
+package main
+
+import "fmt"
+
+type X int
+
+func (x *X) inc() {
+	*x++
+}
+
+type user struct {
+	name string
+	age  int
+}
+
+func (u user) ToString() string {
+	return fmt.Sprintf("%+v", u)
+}
+
+func main() {
+	var x X
+	x.inc()
+	println(x)
+
+	var u user
+
+	// 直接访问嵌入的类型成员
+	u.name = "xhz"
+	u.age = 29
+	println(u.ToString())
+}
+```
+
+**接口**
+
+无须在实现类型上添加显式声明，只要包含接口所需的全部方法，即表示实现了该接口。
+
+```
+package main
+
+import "fmt"
+
+type user struct {
+	name string
+	age  int
+}
+
+func (u user) ToString() string {
+	return fmt.Sprintf("%+v", u)
+}
+
+type Printer interface {
+	ToString() string
+}
+
+func main() {
+	var u user
+	// 直接访问嵌入的类型成员
+	u.name = "xhz"
+	u.age = 29
+
+	var p Printer = u
+	println(p.ToString())
+}
+```
+
+### 并发
+
+整个运行时完全并发化设计，几乎都是以 `goroutine` 这是一种比普通协程或线程更加高效的并发设计，能够轻松创建和运行成千上万的并发任务。
+
+```
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func task(id int) {
+	for i := 0; i < 5; i++ {
+		fmt.Printf("%d: %d\n", id, i)
+		time.Sleep(time.Second)
+	}
+}
+
+func main() {
+	// 创建 goroutine
+	go task(1)
+	go task(2)
+
+	time.Sleep(time.Second * 6)
+}
+```
+
+通道（channel） 与 goroutine 搭配，实现用通信代替内存恭喜的 CSP 模型。
+
+```
+package main
+
+// 消费者
+func consumer(data chan int, done chan bool) {
+
+	// 接收数据 直到通道被关闭
+	for x := range data {
+		println("recv:", x)
+	}
+
+	// 通知 main 消费结束
+	done <- true
+}
+
+func producer(data chan int) {
+	for i := 0; i < 5; i++ {
+		// 发送数据
+		data <- i
+	}
+
+	// 关闭通道
+	close(data)
+
+}
+func main() {
+	// 用于接收生产结束的信号
+	done := make(chan bool)
+	// 数据管道
+	data := make(chan int)
+
+	// 启动消费者
+	go consumer(data, done)
+	// 启动生产者
+	go producer(data)
+
+	// 阻塞 直到消费者发出结束信号
+	<-done
+}
 ```
